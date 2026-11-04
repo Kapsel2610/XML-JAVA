@@ -1,0 +1,171 @@
+package com.example.myfff;
+
+
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText editTextLiczbaKostek;
+    private Button buttonLosuj;
+    private Button buttonRosnaco;
+    private Button buttonMalejaco;
+    private GridLayout gridKostki;
+    private TextView textViewWyniki;
+
+    private final List<Integer> wyniki = new ArrayList<>();
+    private final Random random = new Random();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextLiczbaKostek = findViewById(R.id.editTextLiczbaKostek);
+        buttonLosuj = findViewById(R.id.buttonLosuj);
+        buttonRosnaco = findViewById(R.id.buttonRosnaco);
+        buttonMalejaco = findViewById(R.id.buttonMalejaco);
+        gridKostki = findViewById(R.id.gridKostki);
+        textViewWyniki = findViewById(R.id.textViewWyniki);
+
+        buttonLosuj.setOnClickListener(v -> losujKostki());
+        buttonRosnaco.setOnClickListener(v -> sortujRosnaco());
+        buttonMalejaco.setOnClickListener(v -> sortujMalejaco());
+    }
+
+    private void losujKostki() {
+        String tekst = editTextLiczbaKostek.getText().toString().trim();
+
+        if (tekst.isEmpty()) {
+            pokazKomunikat("Podaj liczbę kostek.");
+            return;
+        }
+
+        final int liczbaKostek;
+        try {
+            liczbaKostek = Integer.parseInt(tekst);
+        } catch (NumberFormatException e) {
+            pokazKomunikat("Wpisz prawidłową liczbę całkowitą.");
+            return;
+        }
+
+        if (liczbaKostek <= 0) {
+            pokazKomunikat("Liczba kostek musi być większa od zera.");
+            return;
+        }
+
+        if (liczbaKostek > 100) {
+            pokazKomunikat("Można wylosować maksymalnie 100 kostek.");
+            return;
+        }
+
+        wyniki.clear();
+
+        for (int i = 0; i < liczbaKostek; i++) {
+            // nextInt(6) zwraca wartości 0–5, dlatego dodajemy 1.
+            wyniki.add(random.nextInt(6) + 1);
+        }
+
+        odswiezWidok();
+    }
+
+    private void sortujRosnaco() {
+        if (wyniki.isEmpty()) {
+            pokazKomunikat("Najpierw wylosuj kostki.");
+            return;
+        }
+
+        // Sortowanie bąbelkowe rosnąco.
+        for (int i = 0; i < wyniki.size() - 1; i++) {
+            for (int j = 0; j < wyniki.size() - 1 - i; j++) {
+                if (wyniki.get(j) > wyniki.get(j + 1)) {
+                    int tymczasowa = wyniki.get(j);
+                    wyniki.set(j, wyniki.get(j + 1));
+                    wyniki.set(j + 1, tymczasowa);
+                }
+            }
+        }
+
+        odswiezWidok();
+    }
+
+    private void sortujMalejaco() {
+        if (wyniki.isEmpty()) {
+            pokazKomunikat("Najpierw wylosuj kostki.");
+            return;
+        }
+
+        // Sortowanie bąbelkowe malejąco.
+        for (int i = 0; i < wyniki.size() - 1; i++) {
+            for (int j = 0; j < wyniki.size() - 1 - i; j++) {
+                if (wyniki.get(j) < wyniki.get(j + 1)) {
+                    int tymczasowa = wyniki.get(j);
+                    wyniki.set(j, wyniki.get(j + 1));
+                    wyniki.set(j + 1, tymczasowa);
+                }
+            }
+        }
+
+        odswiezWidok();
+    }
+
+    private void odswiezWidok() {
+        // Wyniki tekstowe oddzielone przecinkami.
+        StringBuilder tekstWynikow = new StringBuilder();
+
+        for (int i = 0; i < wyniki.size(); i++) {
+            if (i > 0) {
+                tekstWynikow.append(", ");
+            }
+            tekstWynikow.append(wyniki.get(i));
+        }
+
+        textViewWyniki.setText(tekstWynikow.toString());
+
+        // Pola przypominające kostki.
+        gridKostki.removeAllViews();
+        gridKostki.setColumnCount(5);
+
+        int rozmiar = dpNaPx(56);
+        int margines = dpNaPx(5);
+
+        for (Integer wynik : wyniki) {
+            TextView kostka = new TextView(this);
+            kostka.setText(String.valueOf(wynik));
+            kostka.setTextSize(24);
+            kostka.setTextColor(Color.BLACK);
+            kostka.setTypeface(null, Typeface.BOLD);
+            kostka.setGravity(Gravity.CENTER);
+            kostka.setBackgroundColor(Color.LTGRAY);
+
+            GridLayout.LayoutParams parametry = new GridLayout.LayoutParams();
+            parametry.width = rozmiar;
+            parametry.height = rozmiar;
+            parametry.setMargins(margines, margines, margines, margines);
+
+            gridKostki.addView(kostka, parametry);
+        }
+    }
+
+    private int dpNaPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
+
+    private void pokazKomunikat(String wiadomosc) {
+        Toast.makeText(this, wiadomosc, Toast.LENGTH_SHORT).show();
+    }
+}
