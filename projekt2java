@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
         wyniki.clear();
 
         for (int i = 0; i < liczbaKostek; i++) {
-            // nextInt(6) zwraca wartości 0–5, dlatego dodajemy 1.
             wyniki.add(random.nextInt(6) + 1);
         }
 
@@ -122,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void odswiezWidok() {
-        // Wyniki tekstowe oddzielone przecinkami.
         StringBuilder tekstWynikow = new StringBuilder();
 
         for (int i = 0; i < wyniki.size(); i++) {
