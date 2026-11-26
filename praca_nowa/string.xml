@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">PersonalizatorTekstu</string>
+
+    <string-array name="texts">
+        <item>Witaj w mojej aplikacji!</item>
+        <item>Miłego dnia!</item>
+        <item>Personalizuj swój ekran!</item>
+        <item>Android Studio jest świetne!</item>
+    </string-array>
+</resources>
